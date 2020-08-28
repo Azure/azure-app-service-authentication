@@ -1,0 +1,18 @@
+﻿@page "/login"
+@inject Microsoft.Extensions.Options.IOptions<RemoteAuthenticationOptions<EasyAuthOptions>> Options
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+<h1>Login</h1>
+
+<div class="container">
+    @foreach (var provider in Options.Value.ProviderOptions.Providers)
+    {
+        <div class="row">
+            <div class="col-sm-12 col-md-9 col-lg-6">
+                <a class="btn btn-block btn-lg btn-social btn-@provider.Id" href="/.auth/login/@provider.Id">
+                    <span class="fa fa-@provider.Id"></span> Sign in with @provider.DisplayName
+                </a>
+            </div>
+        </div>
+    }
+</div>

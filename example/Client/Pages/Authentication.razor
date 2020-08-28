@@ -1,0 +1,31 @@
+﻿@page "/authentication/{action}"
+@attribute [Route("/authentication/{action}/{state}")]
+@inject Microsoft.Extensions.Options.IOptions<RemoteAuthenticationOptions<EasyAuthOptions>> Options
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+<EasyAuthRemoteAuthenticatorView SelectedOption="@_selectedOption" Action="@Action">
+    <LoggingIn>
+        <div class="container">
+            @foreach (var provider in Options.Value.ProviderOptions.Providers)
+            {
+                <div class="row">
+                    <div class="col-sm-12 col-md-9 col-lg-6">
+                        <a class="btn btn-block btn-lg btn-social btn-@provider.Id" @onclick="(args) => SelectOption(provider.Id)">
+                            <span class="fa fa-@provider.Id"></span> Sign in with @provider.DisplayName
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </LoggingIn>
+</EasyAuthRemoteAuthenticatorView>
+
+@code{
+    [Parameter] public string Action { get; set; }
+
+    [Parameter] public string State { get; set; } = "";
+
+    private string _selectedOption;
+
+    public void SelectOption(string option) => _selectedOption = option;
+}
