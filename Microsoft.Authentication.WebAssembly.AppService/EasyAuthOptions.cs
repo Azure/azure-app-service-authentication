@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.Collections.Generic;
 
 namespace Microsoft.Authentication.WebAssembly.AppService
@@ -19,8 +21,8 @@ namespace Microsoft.Authentication.WebAssembly.AppService
     {
         public ExternalProvider(string id, string name)
         {
-            Id = id;
-            DisplayName = name;
+            this.Id = id;
+            this.DisplayName = name;
         }
 
         public string Id { get; set; }

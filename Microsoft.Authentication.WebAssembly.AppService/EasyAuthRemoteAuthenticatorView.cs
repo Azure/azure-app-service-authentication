@@ -1,15 +1,18 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
-using System;
-using System.Threading.Tasks;
 
 namespace Microsoft.Authentication.WebAssembly.AppService
 {
     public class EasyAuthRemoteAuthenticatorView : RemoteAuthenticatorView
     {
-        private string _message;
+        string message;
 
         [Parameter] public string SelectedOption { get; set; }
 
@@ -21,19 +24,19 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
         protected async override Task OnParametersSetAsync()
         {
-            switch (Action)
+            switch (this.Action)
             {
                 case RemoteAuthenticationActions.LogIn:
-                    if (SelectedOption != null)
+                    if (this.SelectedOption != null)
                     {
-                        await ProcessLogin(GetReturnUrl(state: null));
+                        await this.ProcessLogin(this.GetReturnUrl(state: null));
                     }
                     return;
 
                 // Doing this because the SignOutManager intercepts the call otherwise and it'll fail
                 // TODO: Investigate a custom SignOutManager
                 case RemoteAuthenticationActions.LogOut:
-                    await AuthenticationService.SignOutAsync(new EasyAuthRemoteAuthenticationContext
+                    await this.AuthenticationService.SignOutAsync(new EasyAuthRemoteAuthenticationContext
                     {
                         State = AuthenticationState
                     });
@@ -47,13 +50,13 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
-            switch (Action)
+            switch (this.Action)
             {
                 case RemoteAuthenticationActions.LogInFailed:
-                    builder.AddContent(0, LogInFailed(_message));
+                    builder.AddContent(0, this.LogInFailed(this.message));
                     break;
                 case RemoteAuthenticationActions.LogOutFailed:
-                    builder.AddContent(0, LogOutFailed(_message));
+                    builder.AddContent(0, this.LogOutFailed(this.message));
                     break;
                 default:
                     base.BuildRenderTree(builder);
@@ -61,26 +64,27 @@ namespace Microsoft.Authentication.WebAssembly.AppService
             }
         }
 
-        private async Task ProcessLogin(string returnUrl)
+        async Task ProcessLogin(string returnUrl)
         {
-            AuthenticationState.ReturnUrl = returnUrl;
-            var result = await AuthenticationService.SignInAsync(new EasyAuthRemoteAuthenticationContext
-            {
-                State = AuthenticationState,
-                SelectedProvider = SelectedOption
-            });
+            this.AuthenticationState.ReturnUrl = returnUrl;
+            RemoteAuthenticationResult<RemoteAuthenticationState> result = 
+                await this.AuthenticationService.SignInAsync(new EasyAuthRemoteAuthenticationContext
+                {
+                    State = AuthenticationState,
+                    SelectedProvider = SelectedOption
+                });
 
             switch (result.Status)
             {
                 case RemoteAuthenticationStatus.Redirect:
                     break;
                 case RemoteAuthenticationStatus.Success:
-                    await OnLogInSucceeded.InvokeAsync(result.State);
-                    await NavigateToReturnUrl(GetReturnUrl(result.State, returnUrl));
+                    await this.OnLogInSucceeded.InvokeAsync(result.State);
+                    await this.NavigateToReturnUrl(this.GetReturnUrl(result.State, returnUrl));
                     break;
                 case RemoteAuthenticationStatus.Failure:
-                    _message = result.ErrorMessage;
-                    Navigation.NavigateTo(ApplicationPaths.LogInFailedPath);
+                    this.message = result.ErrorMessage;
+                    this.Navigation.NavigateTo(this.ApplicationPaths.LogInFailedPath);
                     break;
                 case RemoteAuthenticationStatus.OperationCompleted:
                     break;
@@ -89,23 +93,23 @@ namespace Microsoft.Authentication.WebAssembly.AppService
             }
         }
 
-        private async Task NavigateToReturnUrl(string returnUrl) => await JS.InvokeVoidAsync("Blazor.navigateTo", returnUrl, false, true);
+        ValueTask NavigateToReturnUrl(string returnUrl) => this.JS.InvokeVoidAsync("Blazor.navigateTo", returnUrl, false, true);
 
-        private string GetReturnUrl(RemoteAuthenticationState state, string defaultReturnUrl = null)
+        string GetReturnUrl(RemoteAuthenticationState state, string defaultReturnUrl = null)
         {
             if (state?.ReturnUrl != null)
             {
                 return state.ReturnUrl;
             }
 
-            var fromQuery = GetParameter(new Uri(Navigation.Uri).Query, "returnUrl");
-            if (!string.IsNullOrWhiteSpace(fromQuery) && !fromQuery.StartsWith(Navigation.BaseUri))
+            string fromQuery = GetParameter(new Uri(this.Navigation.Uri).Query, "returnUrl");
+            if (!string.IsNullOrWhiteSpace(fromQuery) && !fromQuery.StartsWith(this.Navigation.BaseUri))
             {
                 // This is an extra check to prevent open redirects.
                 throw new InvalidOperationException("Invalid return url. The return url needs to have the same origin as the current page.");
             }
 
-            return fromQuery ?? defaultReturnUrl ?? Navigation.BaseUri;
+            return fromQuery ?? defaultReturnUrl ?? this.Navigation.BaseUri;
         }
 
         internal static string GetParameter(string queryString, string key)
@@ -115,14 +119,14 @@ namespace Microsoft.Authentication.WebAssembly.AppService
                 return null;
             }
 
-            var scanIndex = 0;
+            int scanIndex = 0;
             if (queryString[0] == '?')
             {
                 scanIndex = 1;
             }
 
-            var textLength = queryString.Length;
-            var equalIndex = queryString.IndexOf('=');
+            int textLength = queryString.Length;
+            int equalIndex = queryString.IndexOf('=');
             if (equalIndex == -1)
             {
                 equalIndex = textLength;
@@ -130,7 +134,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
             while (scanIndex < textLength)
             {
-                var ampersandIndex = queryString.IndexOf('&', scanIndex);
+                int ampersandIndex = queryString.IndexOf('&', scanIndex);
                 if (ampersandIndex == -1)
                 {
                     ampersandIndex = textLength;
@@ -142,9 +146,10 @@ namespace Microsoft.Authentication.WebAssembly.AppService
                     {
                         ++scanIndex;
                     }
-                    var name = queryString[scanIndex..equalIndex];
-                    var value = queryString.Substring(equalIndex + 1, ampersandIndex - equalIndex - 1);
-                    var processedName = Uri.UnescapeDataString(name.Replace('+', ' '));
+
+                    string name = queryString[scanIndex..equalIndex];
+                    string value = queryString.Substring(equalIndex + 1, ampersandIndex - equalIndex - 1);
+                    string processedName = Uri.UnescapeDataString(name.Replace('+', ' '));
                     if (string.Equals(processedName, key, StringComparison.OrdinalIgnoreCase))
                     {
                         return Uri.UnescapeDataString(value.Replace('+', ' '));
@@ -160,7 +165,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
                 {
                     if (ampersandIndex > scanIndex)
                     {
-                        var value = queryString[scanIndex..ampersandIndex];
+                        string value = queryString[scanIndex..ampersandIndex];
                         if (string.Equals(value, key, StringComparison.OrdinalIgnoreCase))
                         {
                             return string.Empty;

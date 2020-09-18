@@ -1,20 +1,19 @@
-﻿using Microsoft.Authentication.WebAssembly.AppService;
-using Microsoft.Authentication.WebAssembly.AppService.Models;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.Authentication.WebAssembly.AppService.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Microsoft.Authentication.WebAssembly.AppService
 {
@@ -30,10 +29,10 @@ namespace Microsoft.Authentication.WebAssembly.AppService
             NavigationManager navigationManager,
             IJSRuntime jsRuntime)
         {
-            Options = options.Value;
-            HttpClient = new HttpClient() { BaseAddress = new Uri(navigationManager.BaseUri) };
-            Navigation = navigationManager;
-            JSRuntime = jsRuntime;
+            this.Options = options.Value;
+            this.HttpClient = new HttpClient() { BaseAddress = new Uri(navigationManager.BaseUri) };
+            this.Navigation = navigationManager;
+            this.JSRuntime = jsRuntime;
         }
 
         public async override Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -41,10 +40,10 @@ namespace Microsoft.Authentication.WebAssembly.AppService
             // TODO: Cache this so that it doesn't probe the host every time.
             try
             {
-                var authDataUrl = Options.ProviderOptions.AuthenticationDataUrl + "/.auth/me";
-                var data = await HttpClient.GetFromJsonAsync<AuthenticationData>(authDataUrl);
+                string authDataUrl = this.Options.ProviderOptions.AuthenticationDataUrl + "/.auth/me";
+                AuthenticationData data = await this.HttpClient.GetFromJsonAsync<AuthenticationData>(authDataUrl);
 
-                var principal = data.ClientPrincipal;
+                ClientPrincipal principal = data.ClientPrincipal;
                 principal.UserRoles = principal.UserRoles.Except(new string[] { "anonymous" }, StringComparer.CurrentCultureIgnoreCase);
 
                 if (!principal.UserRoles.Any())
@@ -70,21 +69,23 @@ namespace Microsoft.Authentication.WebAssembly.AppService
             {
                 throw new InvalidOperationException("Not an easyauthcontext");
             }
-            var stateId = Guid.NewGuid().ToString();
-            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", $"Blazor.EasyAuth.{stateId}", JsonSerializer.Serialize(context.State));
-            Navigation.NavigateTo($"/.auth/login/{easyAuthContext.SelectedProvider}?post_login_redirect_uri=authentication/login-callback/{stateId}", forceLoad: true);
+
+            string stateId = Guid.NewGuid().ToString();
+            await this.JSRuntime.InvokeVoidAsync("sessionStorage.setItem", $"Blazor.EasyAuth.{stateId}", JsonSerializer.Serialize(context.State));
+            this.Navigation.NavigateTo($"/.auth/login/{easyAuthContext.SelectedProvider}?post_login_redirect_uri=authentication/login-callback/{stateId}", forceLoad: true);
 
             return new RemoteAuthenticationResult<RemoteAuthenticationState> { Status = RemoteAuthenticationStatus.Redirect };
         }
 
         public async Task<RemoteAuthenticationResult<RemoteAuthenticationState>> CompleteSignInAsync(RemoteAuthenticationContext<RemoteAuthenticationState> context)
         {
-            var stateId = new Uri(context.Url).PathAndQuery.Split("?")[0].Split("/", StringSplitOptions.RemoveEmptyEntries).Last();
-            var serializedState = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", $"Blazor.EasyAuth.{stateId}");
-            var state = JsonSerializer.Deserialize<RemoteAuthenticationState>(serializedState);
+            string stateId = new Uri(context.Url).PathAndQuery.Split("?")[0].Split("/", StringSplitOptions.RemoveEmptyEntries).Last();
+            string serializedState = await this.JSRuntime.InvokeAsync<string>("sessionStorage.getItem", $"Blazor.EasyAuth.{stateId}");
+            RemoteAuthenticationState state = JsonSerializer.Deserialize<RemoteAuthenticationState>(serializedState);
             return new RemoteAuthenticationResult<RemoteAuthenticationState> { State = state, Status = RemoteAuthenticationStatus.Success };
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<RemoteAuthenticationResult<RemoteAuthenticationState>> CompleteSignOutAsync(RemoteAuthenticationContext<RemoteAuthenticationState> context)
         {
             // TODO: Work out how to get the stateId
@@ -92,10 +93,11 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
             return new RemoteAuthenticationResult<RemoteAuthenticationState> { Status = RemoteAuthenticationStatus.Success };
         }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         public Task<RemoteAuthenticationResult<RemoteAuthenticationState>> SignOutAsync(RemoteAuthenticationContext<RemoteAuthenticationState> context)
         {
-            Navigation.NavigateTo($"/.auth/logout?post_logout_redirect_uri=authentication/logout-callback", forceLoad: true);
+            this.Navigation.NavigateTo($"/.auth/logout?post_logout_redirect_uri=authentication/logout-callback", forceLoad: true);
 
             return Task.FromResult(new RemoteAuthenticationResult<RemoteAuthenticationState> { Status = RemoteAuthenticationStatus.Redirect });
         }

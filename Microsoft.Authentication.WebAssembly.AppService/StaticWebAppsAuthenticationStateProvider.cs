@@ -1,21 +1,23 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Authentication.WebAssembly.AppService.Models;
-using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Authentication.WebAssembly.AppService
 {
     public class StaticWebAppsAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private readonly IConfiguration config;
-        private readonly HttpClient http;
+        readonly IConfiguration config;
+        readonly HttpClient http;
 
         public StaticWebAppsAuthenticationStateProvider(IConfiguration config, IWebAssemblyHostEnvironment environment)
         {
@@ -27,10 +29,10 @@ namespace Microsoft.Authentication.WebAssembly.AppService
         {
             try
             {
-                var authDataUrl = config.GetValue("StaticWebAppsAuthentication:AuthenticationDataUrl", "/.auth/me");
-                var json = await http.GetStringAsync(authDataUrl);
+                string authDataUrl = this.config.GetValue("StaticWebAppsAuthentication:AuthenticationDataUrl", "/.auth/me");
+                string json = await this.http.GetStringAsync(authDataUrl);
 
-                var user = ParseClaims(json);
+                ClaimsPrincipal user = ParseClaims(json);
                 return new AuthenticationState(user);
             }
             catch
@@ -41,9 +43,9 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
         public static ClaimsPrincipal ParseClaims(string json)
         {
-            var data = JsonSerializer.Deserialize<AuthenticationData>(json);
+            AuthenticationData data = JsonSerializer.Deserialize<AuthenticationData>(json);
 
-            var principal = data.ClientPrincipal;
+            ClientPrincipal principal = data.ClientPrincipal;
             principal.UserRoles = principal.UserRoles.Except(new string[] { "anonymous" }, StringComparer.CurrentCultureIgnoreCase);
 
             if (!principal.UserRoles.Any())
@@ -51,7 +53,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
                 return new ClaimsPrincipal();
             }
 
-            var identity = new ClaimsIdentity(principal.IdentityProvider);
+            ClaimsIdentity identity = new ClaimsIdentity(principal.IdentityProvider);
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, principal.UserId));
             identity.AddClaim(new Claim(ClaimTypes.Name, principal.UserDetails));
             identity.AddClaims(principal.UserRoles.Select(r => new Claim(ClaimTypes.Role, r)));

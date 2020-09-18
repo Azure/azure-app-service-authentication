@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +13,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
         {
             return services.AddStaticWebAppsAuthentication<RemoteAuthenticationState, RemoteUserAccount, EasyAuthOptions>();
         }
+
         public static IServiceCollection AddStaticWebAppsAuthentication<TRemoteAuthenticationState, TAccount, TProviderOptions>(this IServiceCollection services)
             where TRemoteAuthenticationState : RemoteAuthenticationState
             where TAccount : RemoteUserAccount
