@@ -53,7 +53,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
                 return new ClaimsPrincipal();
             }
 
-            ClaimsIdentity identity = new ClaimsIdentity(principal.IdentityProvider);
+            var identity = new ClaimsIdentity(principal.IdentityProvider);
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, principal.UserId));
             identity.AddClaim(new Claim(ClaimTypes.Name, principal.UserDetails));
             identity.AddClaims(principal.UserRoles.Select(r => new Claim(ClaimTypes.Role, r)));

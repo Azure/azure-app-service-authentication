@@ -93,7 +93,10 @@ namespace Microsoft.Authentication.WebAssembly.AppService
             }
         }
 
-        ValueTask NavigateToReturnUrl(string returnUrl) => this.JS.InvokeVoidAsync("Blazor.navigateTo", returnUrl, false, true);
+        ValueTask NavigateToReturnUrl(string returnUrl)
+        {
+            return this.JS.InvokeVoidAsync("Blazor.navigateTo", returnUrl, false, true);
+        }
 
         string GetReturnUrl(RemoteAuthenticationState state, string defaultReturnUrl = null)
         {
