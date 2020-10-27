@@ -10,7 +10,12 @@ using Microsoft.JSInterop;
 
 namespace Microsoft.Authentication.WebAssembly.AppService
 {
-    public class EasyAuthRemoteAuthenticatorView : RemoteAuthenticatorView
+    public class EasyAuthRemoteAuthenticatorView : EasyAuthRemoteAuthenticatorViewCore<RemoteAuthenticationState>
+    {
+        public EasyAuthRemoteAuthenticatorView() => this.AuthenticationState = new RemoteAuthenticationState();
+    }
+
+    public class EasyAuthRemoteAuthenticatorViewCore<TAuthenticationState> : RemoteAuthenticatorViewCore<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
     {
         string message;
 
@@ -20,7 +25,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
         [Inject] IJSRuntime JS { get; set; }
 
-        [Inject] IRemoteAuthenticationService<RemoteAuthenticationState> AuthenticationService { get; set; }
+        [Inject] IRemoteAuthenticationService<TAuthenticationState> AuthenticationService { get; set; }
 
         protected async override Task OnParametersSetAsync()
         {
@@ -36,7 +41,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
                 // Doing this because the SignOutManager intercepts the call otherwise and it'll fail
                 // TODO: Investigate a custom SignOutManager
                 case RemoteAuthenticationActions.LogOut:
-                    await this.AuthenticationService.SignOutAsync(new EasyAuthRemoteAuthenticationContext
+                    await this.AuthenticationService.SignOutAsync(new EasyAuthRemoteAuthenticationContext<TAuthenticationState>
                     {
                         State = AuthenticationState
                     });
@@ -67,8 +72,8 @@ namespace Microsoft.Authentication.WebAssembly.AppService
         async Task ProcessLogin(string returnUrl)
         {
             this.AuthenticationState.ReturnUrl = returnUrl;
-            RemoteAuthenticationResult<RemoteAuthenticationState> result = 
-                await this.AuthenticationService.SignInAsync(new EasyAuthRemoteAuthenticationContext
+            RemoteAuthenticationResult<TAuthenticationState> result =
+                await this.AuthenticationService.SignInAsync(new EasyAuthRemoteAuthenticationContext<TAuthenticationState>
                 {
                     State = AuthenticationState,
                     SelectedProvider = SelectedOption
@@ -183,7 +188,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
         }
     }
 
-    public class EasyAuthRemoteAuthenticationContext : RemoteAuthenticationContext<RemoteAuthenticationState>
+    public class EasyAuthRemoteAuthenticationContext<TAuthenticationState> : RemoteAuthenticationContext<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
     {
         public string SelectedProvider { get; set; }
     }

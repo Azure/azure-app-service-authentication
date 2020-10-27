@@ -21,7 +21,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
         {
             services.AddRemoteAuthentication<TRemoteAuthenticationState, TAccount, TProviderOptions>();
 
-            services.AddScoped<AuthenticationStateProvider, EasyAuthRemoteAuthenticationService>();
+            services.AddScoped<AuthenticationStateProvider, EasyAuthRemoteAuthenticationService<TRemoteAuthenticationState>>();
 
             return services;
         }
