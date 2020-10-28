@@ -1,0 +1,95 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - v* #version is cut
+
+env:
+  OUTPUT_PATH: ${{ github.workspace }}/.nupkg
+  DOTNET_VERSION: "3.1.301"
+  NUGET_SOURCE: "https://api.nuget.org/v3/index.json"
+  MYGET_SOURCE: ""
+  GITHUB_SOURCE: "https://nuget.pkg.github.com/Azure/index.json"
+  CONFIGURATION: Release
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core ${{ env.DOTNET_VERSION }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
+    - name: Package
+      run: dotnet pack --configuration ${{ env.CONFIGURATION }} --no-build --output ${{ env.OUTPUT_PATH }} -p:PackageVersion="${GITHUB_REF#refs/*/v}"
+      working-directory: ${{ github.workspace }}/Microsoft.Authentication.WebAssembly.AppService
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+          name: packages
+          path: ${{ env.OUTPUT_PATH }}
+
+  publish-nuget:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: packages
+          path: ${{ env.OUTPUT_PATH }}
+
+      - name: Setup .NET Core ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish
+        run: dotnet nuget push --key ${{ secrets.NUGET_KEY }} --source ${{ env.NUGET_SOURCE }}
+        working-directory: ${{ env.OUTPUT_PATH }}
+
+  publish-myget:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: packages
+          path: ${{ env.OUTPUT_PATH }}
+
+      - name: Setup .NET Core ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish
+        run: dotnet nuget push --key ${{ secrets.MYGET_KEY }} --source ${{ env.MYGET_SOURCE }}
+        working-directory: ${{ env.OUTPUT_PATH }}
+
+  publish-github:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: packages
+          path: ${{ env.OUTPUT_PATH }}
+
+      - name: Setup .NET Core ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish
+        run: dotnet nuget push --key ${{ secrets.GITHUB_TOKEN }} --source ${{ env.GITHUB_SOURCE }}
+        working-directory: ${{ env.OUTPUT_PATH }}
