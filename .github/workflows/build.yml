@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  OUTPUT_PATH: ${{ github.workspace }}/.nupkg
+  DOTNET_VERSION: "3.1.301"
+
 jobs:
   build:
 
@@ -21,4 +25,10 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-
+    - name: Package
+      run: dotnet pack --configuration Release --no-build --version-suffix "-ci-$GITHUB_RUN_ID" --output ${{ env.OUTPUT_PATH }}
+    - name: Upload
+      uses: actions/upload-artifact@v1
+      with:
+          name: packages
+          path: ${{ env.OUTPUT_PATH }}

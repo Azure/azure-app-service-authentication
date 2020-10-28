@@ -12,14 +12,13 @@
     <MajorVersion>0</MajorVersion>
     <MinorVersion>1</MinorVersion>
     <PatchVersion>0</PatchVersion>
-    <Version>$(MajorVersion).$(MinorVersion).$(PatchVersion)</Version>
-    <FileVersion>$(MajorVersion).$(MinorVersion).$(PatchVersion)</FileVersion>
-    <AssemblyVersion>$(MajorVersion).0.0.0</AssemblyVersion>
+    <Version>$(MajorVersion).$(MinorVersion).$(PatchVersion)$(VersionSuffix)</Version>
     <Company>Microsoft Corporation</Company>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>false</IncludeSymbols>
+    <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>
