@@ -10,7 +10,7 @@
   <!-- NuGet package configuration -->
   <PropertyGroup>
     <MajorVersion>0</MajorVersion>
-    <MinorVersion>1</MinorVersion>
+    <MinorVersion>2</MinorVersion>
     <PatchVersion>0</PatchVersion>
     <Version>$(MajorVersion).$(MinorVersion).$(PatchVersion)$(VersionSuffix)</Version>
     <Company>Microsoft Corporation</Company>
