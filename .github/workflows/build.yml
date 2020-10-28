@@ -18,10 +18,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET Core ${{ env.DOTNET_VERSION }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -30,7 +30,7 @@ jobs:
       run: dotnet pack --configuration ${{ env.CONFIGURATION }} --no-build --version-suffix "-ci-$GITHUB_RUN_ID" --output ${{ env.OUTPUT_PATH }}
       working-directory: ${{ github.workspace }}/Microsoft.Authentication.WebAssembly.AppService
     - name: Upload
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
           name: packages
           path: ${{ env.OUTPUT_PATH }}
