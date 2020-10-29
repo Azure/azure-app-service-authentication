@@ -8,7 +8,7 @@ on:
 
 env:
   OUTPUT_PATH: ${{ github.workspace }}/.nupkg
-  DOTNET_VERSION: "3.1.301"
+  DOTNET_VERSION: "3.1.403"
   CONFIGURATION: Release
 
 jobs:
