@@ -17,7 +17,7 @@ using Microsoft.JSInterop;
 
 namespace Microsoft.Authentication.WebAssembly.AppService
 {
-    public class EasyAuthRemoteAuthenticationService<TAuthenticationState> : AuthenticationStateProvider, IRemoteAuthenticationService<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
+    class EasyAuthRemoteAuthenticationService<TAuthenticationState> : AuthenticationStateProvider, IRemoteAuthenticationService<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
     {
         const string browserStorageType = "sessionStorage";
         const string storageKeyPrefix = "Blazor.EasyAuth";
