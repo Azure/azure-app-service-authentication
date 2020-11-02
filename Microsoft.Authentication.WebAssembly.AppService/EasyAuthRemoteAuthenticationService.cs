@@ -19,6 +19,9 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 {
     public class EasyAuthRemoteAuthenticationService<TAuthenticationState> : AuthenticationStateProvider, IRemoteAuthenticationService<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
     {
+        const string browserStorageType = "sessionStorage";
+        const string storageKeyPrefix = "Blazor.EasyAuth";
+
         public RemoteAuthenticationOptions<EasyAuthOptions> Options { get; }
         public HttpClient HttpClient { get; }
         public NavigationManager Navigation { get; }
@@ -71,7 +74,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
             }
 
             string stateId = Guid.NewGuid().ToString();
-            await this.JSRuntime.InvokeVoidAsync("sessionStorage.setItem", $"Blazor.EasyAuth.{stateId}", JsonSerializer.Serialize(context.State));
+            await this.JSRuntime.InvokeVoidAsync($"{browserStorageType}.setItem", $"{storageKeyPrefix}.{stateId}", JsonSerializer.Serialize(context.State));
             this.Navigation.NavigateTo($"/.auth/login/{easyAuthContext.SelectedProvider}?post_login_redirect_uri=authentication/login-callback/{stateId}", forceLoad: true);
 
             return new RemoteAuthenticationResult<TAuthenticationState> { Status = RemoteAuthenticationStatus.Redirect };
@@ -80,20 +83,24 @@ namespace Microsoft.Authentication.WebAssembly.AppService
         public async Task<RemoteAuthenticationResult<TAuthenticationState>> CompleteSignInAsync(RemoteAuthenticationContext<TAuthenticationState> context)
         {
             string stateId = new Uri(context.Url).PathAndQuery.Split("?")[0].Split("/", StringSplitOptions.RemoveEmptyEntries).Last();
-            string serializedState = await this.JSRuntime.InvokeAsync<string>("sessionStorage.getItem", $"Blazor.EasyAuth.{stateId}");
+            string serializedState = await this.JSRuntime.InvokeAsync<string>($"{browserStorageType}.getItem", $"{storageKeyPrefix}.{stateId}");
             TAuthenticationState state = JsonSerializer.Deserialize<TAuthenticationState>(serializedState);
             return new RemoteAuthenticationResult<TAuthenticationState> { State = state, Status = RemoteAuthenticationStatus.Success };
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<RemoteAuthenticationResult<TAuthenticationState>> CompleteSignOutAsync(RemoteAuthenticationContext<TAuthenticationState> context)
         {
-            // TODO: Work out how to get the stateId
-            // var serializedState = await JSRuntime.InvokeAsync<string>("sessionStorage.removeItem", $"Blazor.EasyAuth.{stateId}");
+            string[] sessionKeys = await this.JSRuntime.InvokeAsync<string[]>("Object.keys", browserStorageType);
+
+            string stateKey = sessionKeys.FirstOrDefault(key => key.StartsWith(storageKeyPrefix));
+
+            if (stateKey != null)
+            {
+                await this.JSRuntime.InvokeAsync<string>($"{browserStorageType}.removeItem", stateKey);
+            }
 
             return new RemoteAuthenticationResult<TAuthenticationState> { Status = RemoteAuthenticationStatus.Success };
         }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         public Task<RemoteAuthenticationResult<TAuthenticationState>> SignOutAsync(RemoteAuthenticationContext<TAuthenticationState> context)
         {
