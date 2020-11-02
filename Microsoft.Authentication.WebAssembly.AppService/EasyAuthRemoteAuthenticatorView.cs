@@ -41,11 +41,25 @@ namespace Microsoft.Authentication.WebAssembly.AppService
                 // Doing this because the SignOutManager intercepts the call otherwise and it'll fail
                 // TODO: Investigate a custom SignOutManager
                 case RemoteAuthenticationActions.LogOut:
-                    await this.AuthenticationService.SignOutAsync(new EasyAuthRemoteAuthenticationContext<TAuthenticationState>
+                    RemoteAuthenticationResult<TAuthenticationState> result = await this.AuthenticationService.SignOutAsync(new EasyAuthRemoteAuthenticationContext<TAuthenticationState> { State = AuthenticationState });
+                    switch (result.Status)
                     {
-                        State = AuthenticationState
-                    });
-                    return;
+                        case RemoteAuthenticationStatus.Redirect:
+                            break;
+                        case RemoteAuthenticationStatus.Success:
+                            await this.OnLogOutSucceeded.InvokeAsync(result.State);
+                            await this.NavigateToReturnUrl(this.GetReturnUrl(this.AuthenticationState));
+                            break;
+                        case RemoteAuthenticationStatus.OperationCompleted:
+                            break;
+                        case RemoteAuthenticationStatus.Failure:
+                            this.Navigation.NavigateTo(this.ApplicationPaths.LogOutFailedPath);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Invalid authentication result status.");
+                    }
+
+                    break;
 
                 default:
                     await base.OnParametersSetAsync();
