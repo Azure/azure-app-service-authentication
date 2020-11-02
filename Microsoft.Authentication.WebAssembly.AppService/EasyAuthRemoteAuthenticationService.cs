@@ -21,6 +21,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
     {
         const string browserStorageType = "sessionStorage";
         const string storageKeyPrefix = "Blazor.EasyAuth";
+        readonly EasyAuthMemoryStorage memoryStorage;
 
         public RemoteAuthenticationOptions<EasyAuthOptions> Options { get; }
         public HttpClient HttpClient { get; }
@@ -30,29 +31,35 @@ namespace Microsoft.Authentication.WebAssembly.AppService
         public EasyAuthRemoteAuthenticationService(
             IOptions<RemoteAuthenticationOptions<EasyAuthOptions>> options,
             NavigationManager navigationManager,
-            IJSRuntime jsRuntime)
+            IJSRuntime jsRuntime,
+            EasyAuthMemoryStorage memoryStorage)
         {
             this.Options = options.Value;
             this.HttpClient = new HttpClient() { BaseAddress = new Uri(navigationManager.BaseUri) };
             this.Navigation = navigationManager;
             this.JSRuntime = jsRuntime;
+            this.memoryStorage = memoryStorage;
         }
 
         public async override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            // TODO: Cache this so that it doesn't probe the host every time.
             try
             {
-                string authDataUrl = this.Options.ProviderOptions.AuthenticationDataUrl + "/.auth/me";
-                AuthenticationData data = await this.HttpClient.GetFromJsonAsync<AuthenticationData>(authDataUrl);
+                if (this.memoryStorage.AuthenticationData == null)
+                {
+                    string authDataUrl = this.Options.ProviderOptions.AuthenticationDataUrl + "/.auth/me";
+                    AuthenticationData data = await this.HttpClient.GetFromJsonAsync<AuthenticationData>(authDataUrl);
+                    this.memoryStorage.SetAuthenticationData(data);
+                }
 
-                ClientPrincipal principal = data.ClientPrincipal;
-                principal.UserRoles = principal.UserRoles.Except(new string[] { "anonymous" }, StringComparer.CurrentCultureIgnoreCase);
+                ClientPrincipal principal = this.memoryStorage.AuthenticationData.ClientPrincipal;
 
-                if (!principal.UserRoles.Any())
+                if (principal == null)
                 {
                     return new AuthenticationState(new ClaimsPrincipal());
                 }
+
+                principal.UserRoles = principal.UserRoles.Except(new string[] { "anonymous" }, StringComparer.CurrentCultureIgnoreCase);
 
                 var identity = new ClaimsIdentity(principal.IdentityProvider);
                 identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, principal.UserId));
@@ -62,6 +69,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
             }
             catch
             {
+                this.memoryStorage.SetAuthenticationData(null);
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
         }
@@ -70,7 +78,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
         {
             if (!(context is EasyAuthRemoteAuthenticationContext<TAuthenticationState> easyAuthContext))
             {
-                throw new InvalidOperationException("Not an easyauthcontext");
+                throw new InvalidOperationException("Not an EasyAuthContext");
             }
 
             string stateId = Guid.NewGuid().ToString();

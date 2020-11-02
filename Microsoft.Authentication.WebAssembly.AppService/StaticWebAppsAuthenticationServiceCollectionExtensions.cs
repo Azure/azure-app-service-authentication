@@ -23,6 +23,8 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
             services.AddScoped<AuthenticationStateProvider, EasyAuthRemoteAuthenticationService<TRemoteAuthenticationState>>();
 
+            services.AddSingleton<EasyAuthMemoryStorage>();
+
             return services;
         }
     }
