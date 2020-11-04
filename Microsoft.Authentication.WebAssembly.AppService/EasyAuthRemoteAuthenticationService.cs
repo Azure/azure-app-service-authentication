@@ -98,7 +98,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
         public async Task<RemoteAuthenticationResult<TAuthenticationState>> CompleteSignOutAsync(RemoteAuthenticationContext<TAuthenticationState> context)
         {
-            string[] sessionKeys = await this.JSRuntime.InvokeAsync<string[]>("Object.keys", browserStorageType);
+            string[] sessionKeys = await this.JSRuntime.InvokeAsync<string[]>("eval", $"Object.keys({browserStorageType})");
 
             string stateKey = sessionKeys.FirstOrDefault(key => key.StartsWith(storageKeyPrefix));
 
