@@ -83,7 +83,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
             string stateId = Guid.NewGuid().ToString();
             await this.JSRuntime.InvokeVoidAsync($"{browserStorageType}.setItem", $"{storageKeyPrefix}.{stateId}", JsonSerializer.Serialize(context.State));
-            this.Navigation.NavigateTo($"/.auth/login/{easyAuthContext.SelectedProvider}?post_login_redirect_uri=authentication/login-callback/{stateId}", forceLoad: true);
+            this.Navigation.NavigateTo($"/.auth/login/{easyAuthContext.SelectedProvider}?post_login_redirect_uri={this.Options.AuthenticationPaths.LogInCallbackPath}/{stateId}", forceLoad: true);
 
             return new RemoteAuthenticationResult<TAuthenticationState> { Status = RemoteAuthenticationStatus.Redirect };
         }
@@ -112,7 +112,7 @@ namespace Microsoft.Authentication.WebAssembly.AppService
 
         public Task<RemoteAuthenticationResult<TAuthenticationState>> SignOutAsync(RemoteAuthenticationContext<TAuthenticationState> context)
         {
-            this.Navigation.NavigateTo($"/.auth/logout?post_logout_redirect_uri=authentication/logout-callback", forceLoad: true);
+            this.Navigation.NavigateTo($"/.auth/logout?post_logout_redirect_uri={this.Options.AuthenticationPaths.LogOutCallbackPath}", forceLoad: true);
 
             return Task.FromResult(new RemoteAuthenticationResult<TAuthenticationState> { Status = RemoteAuthenticationStatus.Redirect });
         }
