@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Authentication.WebAssembly.AppService
+namespace Microsoft.Azure.AppService.Authentication.WebAssembly
 {
     public class EasyAuthOptions
     {

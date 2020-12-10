@@ -2,9 +2,9 @@ name: .NET Core
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   OUTPUT_PATH: ${{ github.workspace }}/.nupkg
@@ -13,24 +13,23 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core ${{ env.DOTNET_VERSION }}
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
-    - name: Package
-      run: dotnet pack --configuration ${{ env.CONFIGURATION }} --no-build --version-suffix "-ci-$GITHUB_RUN_ID" --output ${{ env.OUTPUT_PATH }}
-      working-directory: ${{ github.workspace }}/Microsoft.Authentication.WebAssembly.AppService
-    - name: Upload
-      uses: actions/upload-artifact@v2
-      with:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
+      - name: Package
+        run: dotnet pack --configuration ${{ env.CONFIGURATION }} --no-build --version-suffix "-ci-$GITHUB_RUN_ID" --output ${{ env.OUTPUT_PATH }}
+        working-directory: ${{ github.workspace }}/Microsoft.Azure.AppService.Authentication.WebAssembly
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
           name: packages
           path: ${{ env.OUTPUT_PATH }}

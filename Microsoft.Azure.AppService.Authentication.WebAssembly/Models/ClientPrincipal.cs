@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Authentication.WebAssembly.AppService.Models
+namespace Microsoft.Azure.AppService.Authentication.WebAssembly.Models
 {
     public class ClientPrincipal
     {

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Authentication.WebAssembly.AppService\Microsoft.Authentication.WebAssembly.AppService.csproj" />
+    <ProjectReference Include="..\..\Microsoft.Azure.AppService.Authentication.WebAssembly\Microsoft.Azure.AppService.Authentication.WebAssembly.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 

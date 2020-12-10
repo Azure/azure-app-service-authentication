@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Authentication.WebAssembly.AppService
+namespace Microsoft.Azure.AppService.Authentication.WebAssembly
 {
     public static class StaticWebAppsAuthenticationServiceCollectionExtensions
     {
