@@ -29,7 +29,7 @@ jobs:
         run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
       - name: Package
         run: dotnet pack --configuration ${{ env.CONFIGURATION }} --no-build --output ${{ env.OUTPUT_PATH }} -p:PackageVersion="${GITHUB_REF#refs/*/v}"
-        working-directory: ${{ github.workspace }}/Microsoft.Azure.AppService.Authentication.WebAssembly
+        working-directory: ${{ github.workspace }}/src/Microsoft.Azure.AppService.Authentication.WebAssembly
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
