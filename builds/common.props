@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <Product>Azure AppService Authentication for Blazor</Product>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/Azure/azure-app-service-authentication</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Azure/azure-app-service-authentication</RepositoryUrl>
+    <PackageIconUrl>http://go.microsoft.com/fwlink/?LinkID=288890</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    <Owners>Microsoft,Azure-SDK</Owners>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <None Include="..\..\images\icon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+</Project>
