@@ -1,50 +1,41 @@
-# ASP.NET
-
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+name: $(Version).$(rev:r)
 
 trigger:
-- main
+  branches:
+    include:
+    - release/*
 
-pool:
-  vmImage: 'windows-latest'
+pr: none
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+- group: appservice-auth-extension-variable-group
+- name: TestRunStatus
+  value: ''
 
-steps:
-- task: NuGetToolInstaller@1
+stages:
+- stage: BuildPublish
+  displayName: 'Release: Build and Publish'
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+  jobs:
+  - job: BuildTestPublish
+    displayName: 'Release: Build, Test and Publish on Windows'
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    pool:
+      vmImage: 'windows-latest'
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-- task: EsrpCodeSigning@1
-  inputs:
-    ConnectedServiceName: 'ESRP Service'
-    FolderPath: 'src\Microsoft.Azure.AppService.Authentication.WebAssembly\bin\Release'
-    Pattern: '*.dll,*.exe'
-    SessionTimeout: '60'
-    MaxConcurrency: '50'
-    MaxRetryAttempts: '5'
-- task: NuGetCommand@2
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: 'e6a70c92-4128-439f-8012-382fe78d6396/21e57804-e42a-44f4-a801-493faaf56251'
-    allowPackageConflicts: true
+    workspace:
+      clean: all
+
+    steps:
+    - template: 'template-steps-build-test.yaml'
+      parameters:
+        configuration: 'Release'
+    - template: 'template-steps-publish.yaml'
+      parameters:
+        configuration: 'Release'
+
+# - stage: Release
+#   displayName: 'Release: To NuGet'
+
+#   jobs:
+#   - template: 'template-job-release.yaml'
