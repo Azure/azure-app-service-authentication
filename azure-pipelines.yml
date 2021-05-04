@@ -27,10 +27,10 @@ stages:
       clean: all
 
     steps:
-    - template: 'template-steps-build-test.yaml'
+    - template: 'builds/template-steps-build-test.yaml'
       parameters:
         configuration: 'Release'
-    - template: 'template-steps-publish.yaml'
+    - template: 'builds/template-steps-publish.yaml'
       parameters:
         configuration: 'Release'
 
