@@ -1,4 +1,4 @@
-name: $(Version).$(rev:r)
+name: 1.0.0
 
 trigger:
   branches:
