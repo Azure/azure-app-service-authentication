@@ -8,7 +8,7 @@ steps:
     command: custom
     custom: 'pack'
     projects: |
-      ./src/Microsoft.Azure.AppService.Authentication.WebAssembly.csproj
+      ./src/Microsoft.Azure.AppService.Authentication.WebAssembly/Microsoft.Azure.AppService.Authentication.WebAssembly.csproj
     arguments: '-c ${{ parameters.configuration }} -o $(Build.ArtifactStagingDirectory) --no-build --include-symbols /p:PackageVersion=$(Version)$(VersionSuffix) -v Quiet'
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
