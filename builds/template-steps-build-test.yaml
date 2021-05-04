@@ -23,7 +23,7 @@ steps:
   displayName: '.NET Build'
   inputs:
     projects: '$(System.DefaultWorkingDirectory)/*.sln'
-    arguments: '-c ${{ parameters.configuration }} -p:Version=1.0.0'
+    arguments: '-c ${{ parameters.configuration }} -p:Version=$(Version)'
 
 # - task: DotNetCoreCLI@2
 #   displayName: '.NET Test'
