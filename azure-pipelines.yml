@@ -36,7 +36,7 @@ steps:
 - task: EsrpCodeSigning@1
   inputs:
     ConnectedServiceName: 'ESRP Service'
-    FolderPath: 'src\myapp\$(BuildConfiguration)\Release'
+    FolderPath: 'src\Microsoft.Azure.AppService.Authentication.WebAssembly\bin\Release'
     Pattern: '*.dll,*.exe'
     SessionTimeout: '60'
     MaxConcurrency: '50'
