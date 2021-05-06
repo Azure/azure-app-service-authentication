@@ -51,11 +51,3 @@ steps:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: drop
     publishLocation: Container
-    
-- task: NuGetCommand@2
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-    nuGetFeedType: 'external'
-    publishFeedCredentials: 'Public NuGet (Functions .NET Worker/Worker Extensions)'
-    allowPackageConflicts: true
