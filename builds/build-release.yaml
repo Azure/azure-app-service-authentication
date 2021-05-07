@@ -7,11 +7,6 @@ trigger:
 
 pr: none
 
-variables:
-- group: appservice-auth-extension-variable-group
-- name: TestRunStatus
-  value: ''
-
 stages:
 - stage: BuildPublish
   displayName: 'Release: Build and Publish'

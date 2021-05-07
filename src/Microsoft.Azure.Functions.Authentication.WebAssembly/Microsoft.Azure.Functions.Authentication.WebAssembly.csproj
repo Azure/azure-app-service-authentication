@@ -6,7 +6,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-
+   
   <!-- Source Link support -->
   <PropertyGroup>
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
@@ -39,6 +39,8 @@
     <RepositoryUrl>https://github.com/Azure/azure-app-service-authentication</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
+   
+   <Import Project="..\..\builds\common.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />

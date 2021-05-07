@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
 
-namespace Microsoft.Azure.AppService.Authentication.WebAssembly
+namespace Microsoft.Azure.Functions.Authentication.WebAssembly 
 {
     public class EasyAuthRemoteAuthenticatorView : EasyAuthRemoteAuthenticatorViewCore<RemoteAuthenticationState>
     {

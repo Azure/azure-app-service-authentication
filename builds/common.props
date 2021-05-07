@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Product>Azure AppService Authentication for Blazor</Product>
+    <Product>Azure Functions Authentication for Blazor</Product>
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/Azure/azure-app-service-authentication</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Azure/azure-app-service-authentication</RepositoryUrl>
