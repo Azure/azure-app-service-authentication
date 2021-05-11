@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using Microsoft.Azure.Functions.Authentication.WebAssembly .Models;
+using Microsoft.Azure.Functions.Authentication.WebAssembly.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 
-namespace Microsoft.Azure.Functions.Authentication.WebAssembly 
+namespace Microsoft.Azure.Functions.Authentication.WebAssembly
 {
     class EasyAuthRemoteAuthenticationService<TAuthenticationState> : AuthenticationStateProvider, IRemoteAuthenticationService<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
     {
@@ -83,7 +83,7 @@ namespace Microsoft.Azure.Functions.Authentication.WebAssembly
 
             string stateId = Guid.NewGuid().ToString();
             await this.JSRuntime.InvokeVoidAsync($"{browserStorageType}.setItem", $"{storageKeyPrefix}.{stateId}", JsonSerializer.Serialize(context.State));
-            this.Navigation.NavigateTo($"/.auth/login/{easyAuthContext.SelectedProvider}?post_login_redirect_uri={this.Options.AuthenticationPaths.LogInCallbackPath}/{stateId}", forceLoad: true);
+            this.Navigation.NavigateTo($"/.auth/login/{easyAuthContext.SelectedProvider}?post_login_redirect_uri={this.BuildRedirectUri(this.Options.AuthenticationPaths.LogInCallbackPath)}/{stateId}", forceLoad: true);
 
             return new RemoteAuthenticationResult<TAuthenticationState> { Status = RemoteAuthenticationStatus.Redirect };
         }
@@ -112,9 +112,14 @@ namespace Microsoft.Azure.Functions.Authentication.WebAssembly
 
         public Task<RemoteAuthenticationResult<TAuthenticationState>> SignOutAsync(RemoteAuthenticationContext<TAuthenticationState> context)
         {
-            this.Navigation.NavigateTo($"/.auth/logout?post_logout_redirect_uri={this.Options.AuthenticationPaths.LogOutCallbackPath}", forceLoad: true);
+            this.Navigation.NavigateTo($"/.auth/logout?post_logout_redirect_uri={this.BuildRedirectUri(this.Options.AuthenticationPaths.LogOutCallbackPath)}", forceLoad: true);
 
             return Task.FromResult(new RemoteAuthenticationResult<TAuthenticationState> { Status = RemoteAuthenticationStatus.Redirect });
+        }
+
+        string BuildRedirectUri(string path)
+        {
+            return new Uri(new Uri(this.Navigation.BaseUri), path).ToString();
         }
     }
 }
