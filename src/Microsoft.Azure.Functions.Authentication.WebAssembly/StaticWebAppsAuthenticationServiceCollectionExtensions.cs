@@ -11,19 +11,19 @@ namespace Microsoft.Azure.Functions.Authentication.WebAssembly
     {
         public static IServiceCollection AddStaticWebAppsAuthentication(this IServiceCollection services)
         {
-            return services.AddStaticWebAppsAuthentication<RemoteAuthenticationState, RemoteUserAccount, EasyAuthOptions>();
+            return services.AddStaticWebAppsAuthentication<RemoteAuthenticationState, RemoteUserAccount, AppServiceAuthOptions>();
         }
 
         public static IServiceCollection AddStaticWebAppsAuthentication<TRemoteAuthenticationState, TAccount, TProviderOptions>(this IServiceCollection services)
             where TRemoteAuthenticationState : RemoteAuthenticationState
             where TAccount : RemoteUserAccount
-            where TProviderOptions : EasyAuthOptions, new()
+            where TProviderOptions : AppServiceAuthOptions, new()
         {
             services.AddRemoteAuthentication<TRemoteAuthenticationState, TAccount, TProviderOptions>();
 
-            services.AddScoped<AuthenticationStateProvider, EasyAuthRemoteAuthenticationService<TRemoteAuthenticationState>>();
+            services.AddScoped<AuthenticationStateProvider, AppServiceAuthRemoteAuthenticationService<TRemoteAuthenticationState>>();
 
-            services.AddSingleton<EasyAuthMemoryStorage>();
+            services.AddSingleton<AppServiceAuthMemoryStorage>();
 
             return services;
         }

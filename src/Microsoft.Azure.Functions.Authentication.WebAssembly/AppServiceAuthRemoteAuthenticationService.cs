@@ -17,22 +17,22 @@ using Microsoft.JSInterop;
 
 namespace Microsoft.Azure.Functions.Authentication.WebAssembly
 {
-    class EasyAuthRemoteAuthenticationService<TAuthenticationState> : AuthenticationStateProvider, IRemoteAuthenticationService<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
+    class AppServiceAuthRemoteAuthenticationService<TAuthenticationState> : AuthenticationStateProvider, IRemoteAuthenticationService<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
     {
         const string browserStorageType = "sessionStorage";
-        const string storageKeyPrefix = "Blazor.EasyAuth";
-        readonly EasyAuthMemoryStorage memoryStorage;
+        const string storageKeyPrefix = "Blazor.AppServiceAuth";
+        readonly AppServiceAuthMemoryStorage memoryStorage;
 
-        public RemoteAuthenticationOptions<EasyAuthOptions> Options { get; }
+        public RemoteAuthenticationOptions<AppServiceAuthOptions> Options { get; }
         public HttpClient HttpClient { get; }
         public NavigationManager Navigation { get; }
         public IJSRuntime JSRuntime { get; }
 
-        public EasyAuthRemoteAuthenticationService(
-            IOptions<RemoteAuthenticationOptions<EasyAuthOptions>> options,
+        public AppServiceAuthRemoteAuthenticationService(
+            IOptions<RemoteAuthenticationOptions<AppServiceAuthOptions>> options,
             NavigationManager navigationManager,
             IJSRuntime jsRuntime,
-            EasyAuthMemoryStorage memoryStorage)
+            AppServiceAuthMemoryStorage memoryStorage)
         {
             this.Options = options.Value;
             this.HttpClient = new HttpClient() { BaseAddress = new Uri(navigationManager.BaseUri) };
@@ -76,14 +76,14 @@ namespace Microsoft.Azure.Functions.Authentication.WebAssembly
 
         public async Task<RemoteAuthenticationResult<TAuthenticationState>> SignInAsync(RemoteAuthenticationContext<TAuthenticationState> context)
         {
-            if (!(context is EasyAuthRemoteAuthenticationContext<TAuthenticationState> easyAuthContext))
+            if (!(context is AppServiceAuthRemoteAuthenticationContext<TAuthenticationState> AppServiceAuthContext))
             {
-                throw new InvalidOperationException("Not an EasyAuthContext");
+                throw new InvalidOperationException("Not an AppServiceAuthContext");
             }
 
             string stateId = Guid.NewGuid().ToString();
             await this.JSRuntime.InvokeVoidAsync($"{browserStorageType}.setItem", $"{storageKeyPrefix}.{stateId}", JsonSerializer.Serialize(context.State));
-            this.Navigation.NavigateTo($"/.auth/login/{easyAuthContext.SelectedProvider}?post_login_redirect_uri={this.BuildRedirectUri(this.Options.AuthenticationPaths.LogInCallbackPath)}/{stateId}", forceLoad: true);
+            this.Navigation.NavigateTo($"/.auth/login/{AppServiceAuthContext.SelectedProvider}?post_login_redirect_uri={this.BuildRedirectUri(this.Options.AuthenticationPaths.LogInCallbackPath)}/{stateId}", forceLoad: true);
 
             return new RemoteAuthenticationResult<TAuthenticationState> { Status = RemoteAuthenticationStatus.Redirect };
         }

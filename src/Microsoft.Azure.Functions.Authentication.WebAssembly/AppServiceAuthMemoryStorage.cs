@@ -6,7 +6,7 @@ using Microsoft.Azure.Functions.Authentication.WebAssembly .Models;
 namespace Microsoft.Azure.Functions.Authentication.WebAssembly 
 {
     // A simple in-memory storage model for caching auth data
-    class EasyAuthMemoryStorage
+    class AppServiceAuthMemoryStorage
     {
         public AuthenticationData AuthenticationData { get; private set; }
 

@@ -8,14 +8,14 @@ using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.JSInterop;
 
-namespace Microsoft.Azure.Functions.Authentication.WebAssembly 
+namespace Microsoft.Azure.Functions.Authentication.WebAssembly
 {
-    public class EasyAuthRemoteAuthenticatorView : EasyAuthRemoteAuthenticatorViewCore<RemoteAuthenticationState>
+    public class AppServiceAuthRemoteAuthenticatorView : AppServiceAuthRemoteAuthenticatorViewCore<RemoteAuthenticationState>
     {
-        public EasyAuthRemoteAuthenticatorView() => this.AuthenticationState = new RemoteAuthenticationState();
+        public AppServiceAuthRemoteAuthenticatorView() => this.AuthenticationState = new RemoteAuthenticationState();
     }
 
-    public class EasyAuthRemoteAuthenticatorViewCore<TAuthenticationState> : RemoteAuthenticatorViewCore<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
+    public class AppServiceAuthRemoteAuthenticatorViewCore<TAuthenticationState> : RemoteAuthenticatorViewCore<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
     {
         string message;
 
@@ -41,7 +41,7 @@ namespace Microsoft.Azure.Functions.Authentication.WebAssembly
                 // Doing this because the SignOutManager intercepts the call otherwise and it'll fail
                 // TODO: Investigate a custom SignOutManager
                 case RemoteAuthenticationActions.LogOut:
-                    RemoteAuthenticationResult<TAuthenticationState> result = await this.AuthenticationService.SignOutAsync(new EasyAuthRemoteAuthenticationContext<TAuthenticationState> { State = AuthenticationState });
+                    RemoteAuthenticationResult<TAuthenticationState> result = await this.AuthenticationService.SignOutAsync(new AppServiceAuthRemoteAuthenticationContext<TAuthenticationState> { State = AuthenticationState });
                     switch (result.Status)
                     {
                         case RemoteAuthenticationStatus.Redirect:
@@ -87,7 +87,7 @@ namespace Microsoft.Azure.Functions.Authentication.WebAssembly
         {
             this.AuthenticationState.ReturnUrl = returnUrl;
             RemoteAuthenticationResult<TAuthenticationState> result =
-                await this.AuthenticationService.SignInAsync(new EasyAuthRemoteAuthenticationContext<TAuthenticationState>
+                await this.AuthenticationService.SignInAsync(new AppServiceAuthRemoteAuthenticationContext<TAuthenticationState>
                 {
                     State = AuthenticationState,
                     SelectedProvider = SelectedOption
@@ -202,7 +202,7 @@ namespace Microsoft.Azure.Functions.Authentication.WebAssembly
         }
     }
 
-    public class EasyAuthRemoteAuthenticationContext<TAuthenticationState> : RemoteAuthenticationContext<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
+    public class AppServiceAuthRemoteAuthenticationContext<TAuthenticationState> : RemoteAuthenticationContext<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
     {
         public string SelectedProvider { get; set; }
     }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Azure.Functions.Authentication.WebAssembly
 {
-    public class EasyAuthOptions
+    public class AppServiceAuthOptions
     {
         public IList<ExternalProvider> Providers { get; set; } = new List<ExternalProvider> {
             new ExternalProvider("github", "GitHub"),
