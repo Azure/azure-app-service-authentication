@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using Microsoft.Azure.Functions.Authentication.WebAssembly.Models;
+using Microsoft.Azure.AppService.Authentication.WebAssembly.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 
-namespace Microsoft.Azure.Functions.Authentication.WebAssembly
+namespace Microsoft.Azure.AppService.Authentication.WebAssembly
 {
     class AppServiceAuthRemoteAuthenticationService<TAuthenticationState> : AuthenticationStateProvider, IRemoteAuthenticationService<TAuthenticationState> where TAuthenticationState : RemoteAuthenticationState
     {

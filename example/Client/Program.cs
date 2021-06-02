@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Azure.Functions.Authentication.WebAssembly;
+using Microsoft.Azure.AppService.Authentication.WebAssembly;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Client

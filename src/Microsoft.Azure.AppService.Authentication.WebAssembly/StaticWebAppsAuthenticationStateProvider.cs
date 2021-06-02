@@ -9,10 +9,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Azure.Functions.Authentication.WebAssembly .Models;
+using Microsoft.Azure.AppService.Authentication.WebAssembly.Models;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Azure.Functions.Authentication.WebAssembly 
+namespace Microsoft.Azure.AppService.Authentication.WebAssembly
 {
     public class StaticWebAppsAuthenticationStateProvider : AuthenticationStateProvider
     {
