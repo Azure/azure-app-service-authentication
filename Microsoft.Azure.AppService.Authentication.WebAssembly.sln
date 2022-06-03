@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1500
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.AppService.Authentication.WebAssembly", "src\Microsoft.Azure.AppService.Authentication.WebAssembly\Microsoft.Azure.AppService.Authentication.WebAssembly.csproj", "{7F186EA5-90A4-4FE9-970B-423074B4FB5A}"
 EndProject
