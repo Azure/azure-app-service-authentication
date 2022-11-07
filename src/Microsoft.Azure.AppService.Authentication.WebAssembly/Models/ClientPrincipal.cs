@@ -3,13 +3,6 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Azure.AppService.Authentication.WebAssembly.Models
-{
-    public class ClientPrincipal
-    {
-        public string IdentityProvider { get; set; }
-        public string UserId { get; set; }
-        public string UserDetails { get; set; }
-        public IEnumerable<string> UserRoles { get; set; }
-    }
-}
+namespace Microsoft.Azure.AppService.Authentication.WebAssembly.Models;
+
+public record ClientPrincipal(string IdentityProvider, string UserId, string UserDetails, IEnumerable<string> UserRoles);
