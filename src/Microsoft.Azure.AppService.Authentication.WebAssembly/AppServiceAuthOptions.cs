@@ -3,27 +3,16 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Azure.AppService.Authentication.WebAssembly
+namespace Microsoft.Azure.AppService.Authentication.WebAssembly;
+
+public class AppServiceAuthOptions
 {
-    public class AppServiceAuthOptions
-    {
-        public IList<ExternalProvider> Providers { get; set; } = new List<ExternalProvider> {
-            new ExternalProvider("github", "GitHub"),
-            new ExternalProvider("twitter", "Twitter"),
-            new ExternalProvider("aad", "Azure Active Directory")
-        };
-        public string AuthenticationDataUrl { get; set; } = "";
-    }
-
-    public class ExternalProvider
-    {
-        public ExternalProvider(string id, string name)
-        {
-            this.Id = id;
-            this.DisplayName = name;
-        }
-
-        public string Id { get; set; }
-        public string DisplayName { get; set; }
-    }
+    public IList<ExternalProvider> Providers { get; set; } = new List<ExternalProvider> {
+        new ExternalProvider("github", "GitHub"),
+        new ExternalProvider("twitter", "Twitter"),
+        new ExternalProvider("aad", "Azure Active Directory")
+    };
+    public string AuthenticationDataUrl { get; set; } = "";
 }
+
+public record ExternalProvider(string Id, string DisplayName);

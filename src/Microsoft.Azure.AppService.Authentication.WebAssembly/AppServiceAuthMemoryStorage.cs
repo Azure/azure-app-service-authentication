@@ -3,16 +3,15 @@
 
 using Microsoft.Azure.AppService.Authentication.WebAssembly.Models;
 
-namespace Microsoft.Azure.AppService.Authentication.WebAssembly
-{
-    // A simple in-memory storage model for caching auth data
-    class AppServiceAuthMemoryStorage
-    {
-        public AuthenticationData AuthenticationData { get; private set; }
+namespace Microsoft.Azure.AppService.Authentication.WebAssembly;
 
-        public void SetAuthenticationData(AuthenticationData data)
-        {
-            this.AuthenticationData = data;
-        }
+// A simple in-memory storage model for caching auth data
+class AppServiceAuthMemoryStorage
+{
+    public AuthenticationData? AuthenticationData { get; private set; }
+
+    public void SetAuthenticationData(AuthenticationData? data)
+    {
+        this.AuthenticationData = data;
     }
 }

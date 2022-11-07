@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@azure/static-web-apps-cli": "^1.0.3"
+  },
+  "scripts": {
+    "start": "swa start"
+  }
+}
